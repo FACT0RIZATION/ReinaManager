@@ -177,7 +177,7 @@ jobs:
     needs: prepare
     strategy:
       matrix:
-        rust_target: [ x86_64-pc-windows-msvc, aarch64-pc-windows-msvc ]
+        rust_target: [ i686-pc-windows-msvc, x86_64-pc-windows-msvc, aarch64-pc-windows-msvc ]
     environment: TAURI_KEY
     steps:
       - name: Checkout repository
@@ -209,6 +209,9 @@ jobs:
           mkdir -p .cargo
           echo "Configuring lld for Windows..."
           cat >> .cargo/config.toml <<EOF
+          [target.i686-pc-windows-msvc]
+          linker = "rust-lld.exe"
+
           [target.x86_64-pc-windows-msvc]
           linker = "rust-lld.exe"
 
@@ -229,6 +232,7 @@ jobs:
         shell: bash
         run: |
           case "${{ matrix.rust_target }}" in
+            *i686-pc-windows*) SHORT=win_x86 ;;
             *x86_64-pc-windows*) SHORT=win_x64 ;;
             *aarch64-pc-windows*) SHORT=win_arm64 ;;
             *) SHORT=unknown ;;
